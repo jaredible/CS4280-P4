@@ -1,0 +1,9 @@
+data x := 0;
+data y := 0;
+main
+begin
+	getter x;
+	getter y;
+	assign x := x + y - 1;
+	outter x;
+end
