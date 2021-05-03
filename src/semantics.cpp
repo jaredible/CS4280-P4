@@ -14,31 +14,35 @@ static int var_count = 0;
 static int temp_var_count = 0;
 static int label_count = 0;
 static int scope_begin = 0;
-static bool global_scope = true;
+static int scope = 0;
 
+static void semantics_check(Node *, int);
 static std::string get_temp_var();
 static std::string get_label();
 static void push(Token);
 static void pop();
 static int find(Token);
 static int var_exists(Token);
-static void print_stack();
+static void print_vars();
 
-void semantics_check(Node * node, int count) {
+void generate(Node * node) {
+	semantics_check(node, 0);
+}
+
+static void semantics_check(Node * node, int count) {
 	/* Guard against invalid nodes */
 	if (node == nullptr) return;
 
 	/* Display node's name and variables currently on stack */
 	if (DEBUG) {
 		std::cout << std::left << std::setw(10) << node->name << " ";
-		print_stack();
+		print_vars();
 	}
 
 	/* <program> non-terminal */
 	if (node->name == "<program>") {
 		unsigned int num_vars = 0;
 
-		/* Check all node's children's semantics */
 		for (Node * child : node->children)
 			if (child != nullptr) semantics_check(child, num_vars);
 		
@@ -51,72 +55,67 @@ void semantics_check(Node * node, int count) {
 		int tos_distance = find(node->tokens[1]);
 		scope_begin = var_count;
 
-		/* Check if var has already been defined */
 		if (tos_distance == -1 || tos_distance > count) {
-			/* Push identifier onto stack */
 			push(node->tokens[1]);
 			count++;
+			outfile << "LOAD " << node->tokens[3].value << "\n";
+			outfile << "STACKW 0\n";
 		} else if (tos_distance < count) {
 			std::cout << "ERROR: " << node->tokens[1].value << " has already been defined" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 
-		/* Traverse node's first child's semantics */
 		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 
-		/* Print non-global stack vars */
-		if (!global_scope) print_stack();
+		if (PRINT_VARS) if (scope > 0) print_vars();
 
 	/* <block> non-terminal */
 	} else if (node->name == "<block>") {
 		unsigned int num_vars = 0;
 		scope_begin = var_count;
 
-		/* Print global stack vars */
-		if (global_scope) print_stack();
-		/* Not in global scope anymore */
-		global_scope = false;
+		if (PRINT_VARS) if (scope == 0) print_vars();
+		scope++;
 
-		/* Traverse all node's children's semantics */
 		for (Node * child : node->children)
 			if (child != nullptr) semantics_check(child, num_vars);
 
-		/* Remove all identifiers in current scope */
 		pop();
+		scope--;
 	
 	/* <expr> non-terminal */
 	} else if (node->name == "<expr>") {
 		if (node->tokens.size() > 0 && node->tokens[0].id == TK_MINUS) {
-			if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
+			if (node->children.size() > 0 && node->children[1] != nullptr) semantics_check(node->children[1], count);
 			std::string temp_var = get_temp_var();
 			outfile << "STORE " << temp_var << "\n";
-			if (node->children.size() > 1 && node->children[1] != nullptr) semantics_check(node->children[1], count);
+			if (node->children.size() > 1 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 			outfile << "SUB " << temp_var << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
 	/* <N> non-terminal */
 	} else if (node->name == "<N>") {
 		if (node->tokens.size() > 0 && (node->tokens[0].id == TK_SLASH)) {
-			if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
+			if (node->children.size() > 0 && node->children[1] != nullptr) semantics_check(node->children[1], count);
 			std::string temp_var = get_temp_var();
 			outfile << "STORE " << temp_var << "\n";
-			if (node->children.size() > 1 && node->children[1] != nullptr) semantics_check(node->children[1], count);
+			if (node->children.size() > 1 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 			outfile << "DIV " << temp_var << "\n";
 		} else if (node->tokens.size() > 0 && (node->tokens[0].id == TK_ASTERISK)) {
-			if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
+			if (node->children.size() > 0 && node->children[1] != nullptr) semantics_check(node->children[1], count);
 			std::string temp_var = get_temp_var();
 			outfile << "STORE " << temp_var << "\n";
-			if (node->children.size() > 1 && node->children[1] != nullptr) semantics_check(node->children[1], count);
+			if (node->children.size() > 1 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 			outfile << "MULT " << temp_var << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
 	/* <A> non-terminal */
 	} else if (node->name == "<A>") {
 		if (node->tokens.size() > 0 && node->tokens[0].id == TK_PLUS) {
-			if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
+			if (node->children.size() > 0 && node->children[1] != nullptr) semantics_check(node->children[1], count);
 			std::string temp_var = get_temp_var();
 			outfile << "STORE " << temp_var << "\n";
-			if (node->children.size() > 1 && node->children[1] != nullptr) semantics_check(node->children[1], count);
+			if (node->children.size() > 1 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 			outfile << "ADD " << temp_var << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
@@ -129,17 +128,15 @@ void semantics_check(Node * node, int count) {
 	
 	/* <R> non-terminal */
 	} else if (node->name == "<R>") {
-		if (node->tokens.size() > 0) {
-			if (node->tokens[0].id == TK_ID) {
-				int var_location = var_exists(node->tokens[0]);
-				if (var_location == -1) {
-					std::cout << "ERROR: " << node->tokens[0].value << " has not been declared" << std::endl;
-					exit(EXIT_FAILURE);
-				}
-				outfile << "STACKR " << var_location << "\n";
-			} else if (node->tokens[0].id == TK_INT) {
-				outfile << "LOAD " << node->tokens[0].value << "\n";
+		if (node->tokens[0].id == TK_ID) {
+			int var_location = var_exists(node->tokens[0]);
+			if (var_location == -1) {
+				std::cout << "ERROR: " << node->tokens[0].value << " has not been declared" << std::endl;
+				exit(EXIT_FAILURE);
 			}
+			outfile << "STACKR " << var_location << "\n";
+		} else if (node->tokens[0].id == TK_INT) {
+			outfile << "LOAD " << node->tokens[0].value << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
 	/* <in> non-terminal */
@@ -171,9 +168,8 @@ void semantics_check(Node * node, int count) {
 		}
 		outfile << "STACKW " << var_location << "\n";
 	
-	/* any other non-terminals */
+	/* Other non-terminals */
 	} else {
-		/* Traverse all node's children's semantics */
 		for (Node * child : node->children)
 			if (child != nullptr) semantics_check(child, count);
 	}
@@ -219,7 +215,7 @@ static void pop() {
 	for (auto i = var_count; i > scope_begin; i--) {
 		var_count--;
 		stack[i].value = "";
-		outfile << "PUSH\n";
+		outfile << "POP\n";
 	}
 }
 
@@ -248,8 +244,8 @@ static int var_exists(Token tk) {
 	return -1;
 }
 
-/* Print stack vars inline space-separated */
-static void print_stack() {
+/* Print vars inline space-separated */
+static void print_vars() {
 	/* For all possible tokens in stack */
 	for (auto i = 0; i < max_stack_size; i++) {
 		if (stack[i].value == "") {

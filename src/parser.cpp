@@ -104,7 +104,7 @@ Node * parser() {
 	node = parser_program();
 
 	if (tk.id == TK_EOF) {
-		if (DEBUG) std::cout << "Parse Success" << std::endl;
+		if (PRINT_TOKENS) std::cout << "Parse Success" << std::endl;
 		return node;
 	} else error(TK_EOF, tk);
 
@@ -645,7 +645,7 @@ static bool is_ro(TokenType tk) {
 }
 
 static void print_token(Token token) {
-	if (!DEBUG) return;
+	if (!PRINT_TOKENS) return;
 	std::cout << std::left;
 	std::cout << "Line: " << std::setw(5) << token.line;
 	std::cout << "\tToken: " << std::setw(20) << tokens[token.id];

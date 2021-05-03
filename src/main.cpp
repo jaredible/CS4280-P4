@@ -41,8 +41,8 @@ int main(int argc, char ** argv) {
 
 		/* Execute parser */
 		Node * root = parser();
-		print_tree(root);
-		semantics_check(root, 0);
+		if (PRINT_TREE) print_tree(root);
+		generate(root);
 
 		/* Close files */
 		infile.close();
@@ -95,8 +95,8 @@ int main(int argc, char ** argv) {
 
 		/* Execute parser */
 		Node * root = parser();
-		print_tree(root);
-		semantics_check(root, 0);
+		if (PRINT_TREE) print_tree(root);
+		generate(root);
 
 		/* Close files */
 		infile.close();

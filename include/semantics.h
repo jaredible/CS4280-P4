@@ -6,6 +6,6 @@
 
 extern std::ofstream outfile;
 
-void semantics_check(Node *, int);
+void generate(Node *);
 
 #endif
