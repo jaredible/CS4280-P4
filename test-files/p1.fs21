@@ -1,12 +1,13 @@
-data x := 1;
-data y := 2;
+data x := 0;
 main
 begin
-	outter x;
-	outter y;
-	begin
-		data x := 3;
-		outter x;
-	end
-	outter x;
+	void lbl;
+	void lbl;
+	if [ x =< 2 ] then
+		begin
+			outter x;
+			assign x := x + 1;
+			proc lbl;
+		end
+	;
 end

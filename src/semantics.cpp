@@ -158,6 +158,41 @@ static void semantics_check(Node * node, int count) {
 		outfile << "STORE " << temp_var << "\n";
 		outfile << "WRITE " << temp_var << "\n";
 	
+	} else if (node->name == "<if>") {
+		TokenType cond_op = node->children[1]->tokens[0].id;
+		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
+		std::string temp_var = get_temp_var();
+		outfile << "STORE " << temp_var << "\n";
+		if (node->children[2] != nullptr) semantics_check(node->children[2], count);
+		outfile << "SUB " << temp_var << "\n";
+		std::string label = get_label();
+		if (cond_op == TK_DOUBLE_EQUAL) outfile << "BRNEG " << label << "\nBRPOS " << label << "\n";
+		else if (cond_op == TK_LESS_THAN_EQUAL) outfile << "BRNEG " << label << "\n";
+		else if (cond_op == TK_GREATER_THAN_EQUAL) outfile << "BRPOS " << label << "\n";
+		else if (cond_op == TK_LEFT_BRACKET) outfile << "BRZERO " << label << "\n";
+		else if (cond_op == TK_PERCENT) {}
+		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
+		outfile << label << ": NOOP\n";
+	
+	} else if (node->name == "<loop>") {
+		TokenType cond_op = node->children[1]->tokens[0].id;
+		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
+		std::string temp_var = get_temp_var();
+		std::string start_label = get_label();
+		std::string end_label = get_label();
+		outfile << start_label << ": NOOP\n";
+		outfile << "STORE " << temp_var << "\n";
+		if (node->children[2] != nullptr) semantics_check(node->children[2], count);
+		outfile << "SUB " << temp_var << "\n";
+		if (cond_op == TK_DOUBLE_EQUAL) outfile << "BRNEG " << end_label << "\nBRPOS " << end_label << "\n";
+		else if (cond_op == TK_LESS_THAN_EQUAL) outfile << "BRNEG " << end_label << "\n";
+		else if (cond_op == TK_GREATER_THAN_EQUAL) outfile << "BRPOS " << end_label << "\n";
+		else if (cond_op == TK_LEFT_BRACKET) outfile << "BRZERO " << end_label << "\n";
+		else if (cond_op == TK_PERCENT) {}
+		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
+		outfile << "BR " << start_label << "\n";
+		outfile << end_label << ": NOOP\n";
+	
 	/* <assign> non-terminal */
 	} else if (node->name == "<assign>") {
 		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
@@ -167,6 +202,12 @@ static void semantics_check(Node * node, int count) {
 			exit(EXIT_FAILURE);
 		}
 		outfile << "STACKW " << var_location << "\n";
+	
+	} else if (node->name == "<label>") {
+		outfile << node->tokens[1].value << ": NOOP\n";
+	
+	} else if (node->name == "<goto>") {
+		outfile << "BR " << node->tokens[1].value << "\n";
 	
 	/* Other non-terminals */
 	} else {
