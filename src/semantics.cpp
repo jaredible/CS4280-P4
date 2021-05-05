@@ -178,7 +178,7 @@ static void semantics_check(Node * node, int count) {
 			outfile << "BRZERO " << label << "\n";
 		} else if (cond_op == TK_PERCENT) {
 			outfile << "MULT " << temp_var << "\n";
-			outfile << "BRPOS " << label << "\n";
+			outfile << "BRZPOS " << label << "\n";
 		}
 		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
 		outfile << label << ": NOOP\n";
@@ -205,7 +205,7 @@ static void semantics_check(Node * node, int count) {
 			outfile << "BRZERO " << end_label << "\n";
 		} else if (cond_op == TK_PERCENT) {
 			outfile << "MULT " << temp_var << "\n";
-			outfile << "BRPOS " << end_label << "\n";
+			outfile << "BRZPOS " << end_label << "\n";
 		}
 		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
 		outfile << "BR " << start_label << "\n";
