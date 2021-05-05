@@ -12,8 +12,8 @@ Installation:
 make
 
 Usage: (Note: Press Ctrl+D to finalize keyboard input)
-bin/P3 < file
-bin/P3 [filename]
+bin/P4 < file
+bin/P4 [filename]
 
 Adjustments:
 - Input files require blank last line
