@@ -18,6 +18,7 @@ bin/P4 [filename]
 Adjustments:
 - Input files require blank last line
 - Filenames implicitly have "fs21" extension
+- Global vars are also stored on stack
 - Assumes label(s) will always be declared when using respective goto(s)
 
 Issues:
