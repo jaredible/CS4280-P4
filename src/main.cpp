@@ -30,6 +30,10 @@ int main(int argc, char ** argv) {
 			exit(EXIT_FAILURE);
 		}
 
+		/* Execute parser */
+		Node * root = parser();
+		if (PRINT_TREE) print_tree(root);
+
 		/* Prepare output file for writing */
 		outfile.open(outfile_name, std::ios::trunc);
 
@@ -39,10 +43,8 @@ int main(int argc, char ** argv) {
 			exit(EXIT_FAILURE);
 		}
 
-		/* Execute parser */
-		Node * root = parser();
-		if (PRINT_TREE) print_tree(root);
 		generate(root);
+		std::cout << "Generated target file '" << outfile_name << "'" << std::endl;
 
 		/* Close files */
 		infile.close();
@@ -84,6 +86,10 @@ int main(int argc, char ** argv) {
 
 		std::string outfile_name = "kb.asm";
 
+		/* Execute parser */
+		Node * root = parser();
+		if (PRINT_TREE) print_tree(root);
+
 		/* Prepare output file for writing */
 		outfile.open(outfile_name, std::ios::trunc);
 
@@ -93,10 +99,8 @@ int main(int argc, char ** argv) {
 			exit(EXIT_FAILURE);
 		}
 
-		/* Execute parser */
-		Node * root = parser();
-		if (PRINT_TREE) print_tree(root);
 		generate(root);
+		std::cout << "Generated target file '" << outfile_name << "'" << std::endl;
 
 		/* Close files */
 		infile.close();

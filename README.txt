@@ -23,5 +23,4 @@ Adjustments:
 
 Issues:
 - Comments don't increment line count
-- No semantic checking for label identifiers
-- Upon code generation failure, empty asm exists
+- No static semantic checks for label identifiers
