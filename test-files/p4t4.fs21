@@ -1,0 +1,19 @@
+$$ p4t4 $$
+
+data x := 0;
+data sum := 0;
+
+main
+
+begin
+	void lbl;
+	getter x;
+	outter x;
+	if [x => 0] then
+		begin
+			assign sum := sum + x;
+			proc lbl;
+		end
+	;
+	outter sum;
+end

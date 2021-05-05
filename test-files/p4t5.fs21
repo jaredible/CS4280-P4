@@ -1,0 +1,18 @@
+$$ p4t5 $$
+
+data _N := 99;
+data x := 0;
+data sum := 0;
+
+main
+
+begin
+	loop [sum =< _N]
+		begin
+			getter x;
+			outter x;
+			assign sum := sum + x;
+		end
+	;
+	outter sum;
+end

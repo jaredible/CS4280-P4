@@ -1,0 +1,15 @@
+$$ p4t3 $$
+
+data x := 0;
+
+main
+
+begin
+	getter x;
+	if [x == 0] then
+		outter x;
+	;
+	if [x [==] 0] then
+		outter x * x;
+	;
+end

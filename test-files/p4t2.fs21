@@ -1,0 +1,9 @@
+$$ p4t1 $$
+
+data x := 1;
+
+main
+
+begin
+	outter x;
+end

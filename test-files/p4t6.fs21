@@ -1,0 +1,18 @@
+$$ p4t6 $$
+
+data x := 0;
+data y := 0;
+
+main
+
+begin
+	assign x := *10;
+	assign y := 1;
+	loop [x % y]
+		begin
+			outter x;
+			assign x := x + 1;
+		end
+	;
+	outter x;
+end

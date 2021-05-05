@@ -158,6 +158,7 @@ static void semantics_check(Node * node, int count) {
 		outfile << "STORE " << temp_var << "\n";
 		outfile << "WRITE " << temp_var << "\n";
 	
+	/* <if> non-terminal */
 	} else if (node->name == "<if>") {
 		TokenType cond_op = node->children[1]->tokens[0].id;
 		std::string temp_var = get_temp_var();
@@ -183,6 +184,7 @@ static void semantics_check(Node * node, int count) {
 		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
 		outfile << label << ": NOOP\n";
 	
+	/* <loop> non-terminal */
 	} else if (node->name == "<loop>") {
 		TokenType cond_op = node->children[1]->tokens[0].id;
 		std::string temp_var = get_temp_var();
@@ -221,9 +223,11 @@ static void semantics_check(Node * node, int count) {
 		}
 		outfile << "STACKW " << var_location << "\n";
 	
+	/* <label> non-terminal */
 	} else if (node->name == "<label>") {
 		outfile << node->tokens[1].value << ": NOOP\n";
 	
+	/* <goto> non-terminal */
 	} else if (node->name == "<goto>") {
 		outfile << "BR " << node->tokens[1].value << "\n";
 	
