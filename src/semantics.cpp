@@ -160,35 +160,53 @@ static void semantics_check(Node * node, int count) {
 	
 	} else if (node->name == "<if>") {
 		TokenType cond_op = node->children[1]->tokens[0].id;
-		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 		std::string temp_var = get_temp_var();
-		outfile << "STORE " << temp_var << "\n";
-		if (node->children[2] != nullptr) semantics_check(node->children[2], count);
-		outfile << "SUB " << temp_var << "\n";
 		std::string label = get_label();
-		if (cond_op == TK_DOUBLE_EQUAL) outfile << "BRNEG " << label << "\nBRPOS " << label << "\n";
-		else if (cond_op == TK_LESS_THAN_EQUAL) outfile << "BRNEG " << label << "\n";
-		else if (cond_op == TK_GREATER_THAN_EQUAL) outfile << "BRPOS " << label << "\n";
-		else if (cond_op == TK_LEFT_BRACKET) outfile << "BRZERO " << label << "\n";
-		else if (cond_op == TK_PERCENT) {}
+		if (node->children[2] != nullptr) semantics_check(node->children[2], count);
+		outfile << "STORE " << temp_var << "\n";
+		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
+		if (cond_op == TK_DOUBLE_EQUAL) {
+			outfile << "BRNEG " << label << "\nBRPOS " << label << "\n";
+		} else if (cond_op == TK_LESS_THAN_EQUAL) {
+			outfile << "SUB " << temp_var << "\n";
+			outfile << "BRNEG " << label << "\n";
+		} else if (cond_op == TK_GREATER_THAN_EQUAL) {
+			outfile << "SUB " << temp_var << "\n";
+			outfile << "BRPOS " << label << "\n";
+		} else if (cond_op == TK_LEFT_BRACKET) {
+			outfile << "SUB " << temp_var << "\n";
+			outfile << "BRZERO " << label << "\n";
+		} else if (cond_op == TK_PERCENT) {
+			outfile << "MULT " << temp_var << "\n";
+			outfile << "BRPOS " << label << "\n";
+		}
 		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
 		outfile << label << ": NOOP\n";
 	
 	} else if (node->name == "<loop>") {
 		TokenType cond_op = node->children[1]->tokens[0].id;
-		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 		std::string temp_var = get_temp_var();
 		std::string start_label = get_label();
 		std::string end_label = get_label();
 		outfile << start_label << ": NOOP\n";
-		outfile << "STORE " << temp_var << "\n";
 		if (node->children[2] != nullptr) semantics_check(node->children[2], count);
-		outfile << "SUB " << temp_var << "\n";
-		if (cond_op == TK_DOUBLE_EQUAL) outfile << "BRNEG " << end_label << "\nBRPOS " << end_label << "\n";
-		else if (cond_op == TK_LESS_THAN_EQUAL) outfile << "BRNEG " << end_label << "\n";
-		else if (cond_op == TK_GREATER_THAN_EQUAL) outfile << "BRPOS " << end_label << "\n";
-		else if (cond_op == TK_LEFT_BRACKET) outfile << "BRZERO " << end_label << "\n";
-		else if (cond_op == TK_PERCENT) {}
+		outfile << "STORE " << temp_var << "\n";
+		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
+		if (cond_op == TK_DOUBLE_EQUAL) {
+			outfile << "BRNEG " << end_label << "\nBRPOS " << end_label << "\n";
+		} else if (cond_op == TK_LESS_THAN_EQUAL) {
+			outfile << "SUB " << temp_var << "\n";
+			outfile << "BRNEG " << end_label << "\n";
+		} else if (cond_op == TK_GREATER_THAN_EQUAL) {
+			outfile << "SUB " << temp_var << "\n";
+			outfile << "BRPOS " << end_label << "\n";
+		} else if (cond_op == TK_LEFT_BRACKET) {
+			outfile << "SUB " << temp_var << "\n";
+			outfile << "BRZERO " << end_label << "\n";
+		} else if (cond_op == TK_PERCENT) {
+			outfile << "MULT " << temp_var << "\n";
+			outfile << "BRPOS " << end_label << "\n";
+		}
 		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
 		outfile << "BR " << start_label << "\n";
 		outfile << end_label << ": NOOP\n";

@@ -1,5 +1,5 @@
 Storage = Local
-Driver function is "void semantics_check(Node *, int)" and implemented in "src/semantics.cpp"
+Driver function is "void generate(Node *)" and implemented in "src/semantics.cpp"
 
 Output:
 - All tokens on stack are displayed for every new scope declaring variables
@@ -21,3 +21,4 @@ Adjustments:
 
 Issues:
 - Comments don't increment line count
+- No semantic checking for label identifiers

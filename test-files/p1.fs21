@@ -1,9 +1,10 @@
 data x := 0;
+data y := 1;
 main
 begin
+	assign x := x - 10;
 	void lbl;
-	void lbl;
-	if [ x =< 2 ] then
+	if [x % y] then
 		begin
 			outter x;
 			assign x := x + 1;
