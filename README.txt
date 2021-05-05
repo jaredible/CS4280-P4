@@ -4,9 +4,8 @@ Driver function is "void generate(Node *)" and implemented in "src/semantics.cpp
 Description:
 Compiles an fs21 source file into an assembly (asm) binary in the same directory as the source
 
-Tests:
- - Test-files exists in the directory "test-files"
- - There are several good and bad test-files
+Testing:
+Exist in the directory "test-files"
 
 Installation:
 make
