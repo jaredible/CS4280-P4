@@ -11,7 +11,7 @@ CC := g++ -std=c++11
 CPPFLAGS := -Iinclude -MMD -MP
 CFLAGS := -Wall -g
 
-.PHONY: all test clean cleanrun
+.PHONY: all test clean
 
 all: $(EXE)
 
