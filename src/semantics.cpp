@@ -169,10 +169,10 @@ static void semantics_check(Node * node, int count) {
 			outfile << "BRNEG " << label << "\nBRPOS " << label << "\n";
 		} else if (cond_op == TK_LESS_THAN_EQUAL) {
 			outfile << "SUB " << temp_var << "\n";
-			outfile << "BRNEG " << label << "\n";
+			outfile << "BRPOS " << label << "\n";
 		} else if (cond_op == TK_GREATER_THAN_EQUAL) {
 			outfile << "SUB " << temp_var << "\n";
-			outfile << "BRPOS " << label << "\n";
+			outfile << "BRNEG " << label << "\n";
 		} else if (cond_op == TK_LEFT_BRACKET) {
 			outfile << "SUB " << temp_var << "\n";
 			outfile << "BRZERO " << label << "\n";
@@ -196,10 +196,10 @@ static void semantics_check(Node * node, int count) {
 			outfile << "BRNEG " << end_label << "\nBRPOS " << end_label << "\n";
 		} else if (cond_op == TK_LESS_THAN_EQUAL) {
 			outfile << "SUB " << temp_var << "\n";
-			outfile << "BRNEG " << end_label << "\n";
+			outfile << "BRPOS " << end_label << "\n";
 		} else if (cond_op == TK_GREATER_THAN_EQUAL) {
 			outfile << "SUB " << temp_var << "\n";
-			outfile << "BRPOS " << end_label << "\n";
+			outfile << "BRNEG " << end_label << "\n";
 		} else if (cond_op == TK_LEFT_BRACKET) {
 			outfile << "SUB " << temp_var << "\n";
 			outfile << "BRZERO " << end_label << "\n";

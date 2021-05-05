@@ -1,14 +1,13 @@
 data x := 0;
-data y := 1;
+data y := 0;
 main
 begin
-	assign x := x - 10;
-	void lbl;
-	if [x % y] then
+	assign x := *10;
+	assign y := 1;
+	loop [x % y]
 		begin
 			outter x;
 			assign x := x + 1;
-			proc lbl;
 		end
 	;
 end

@@ -25,6 +25,6 @@ $(BIN_DIR) $(OBJ_DIR):
 	mkdir -p $@
 
 clean:
-	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR) temp.txt
+	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR) kb.* test-files/*.asm
 
 -include $(OBJ:.o=.d)
