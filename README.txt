@@ -1,8 +1,8 @@
 Storage = Local
 Driver function is "void generate(Node *)" and implemented in "src/semantics.cpp"
 
-Output:
-- All tokens on stack are displayed for every new scope declaring variables
+Description:
+Compiles an fs21 source file into an assembly (asm) binary in the same directory as the source
 
 Tests:
  - Test-files exists in the directory "test-files"
@@ -18,6 +18,7 @@ bin/P4 [filename]
 Adjustments:
 - Input files require blank last line
 - Filenames implicitly have "fs21" extension
+- Assumes label(s) will always be declared when using respective goto(s)
 
 Issues:
 - Comments don't increment line count
