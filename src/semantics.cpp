@@ -33,13 +33,13 @@ static void semantics_check(Node * node, int count) {
 	/* Guard against invalid nodes */
 	if (node == nullptr) return;
 
-	/* Display node's name and variables currently on stack */
 	if (DEBUG) {
+		/* Display node's name and variables currently on stack */
 		std::cout << std::left << std::setw(10) << node->name << " ";
 		print_vars();
 	}
 
-	/* <program> non-terminal */
+	/* <program> -> <vars> main <block> */
 	if (node->name == "<program>") {
 		unsigned int num_vars = 0;
 
@@ -50,7 +50,21 @@ static void semantics_check(Node * node, int count) {
 		for (auto i = 0; i < max_stack_size; i++)
 			if (temp_vars[i] != "") outfile << temp_vars[i] << " 0\n";
 	
-	/* <vars> non-terminal */
+	/* <block> -> begin <vars> <stats> end */
+	} else if (node->name == "<block>") {
+		unsigned int num_vars = 0;
+		scope_begin = var_count;
+
+		if (PRINT_VARS) if (scope == 0) print_vars();
+		scope++;
+
+		for (Node * child : node->children)
+			if (child != nullptr) semantics_check(child, num_vars);
+
+		pop();
+		scope--;
+	
+	/* <vars> -> empty | data Identifer := Integer ; <vars> */
 	} else if (node->name == "<vars>") {
 		int tos_distance = find(node->tokens[1]);
 		scope_begin = var_count;
@@ -68,22 +82,8 @@ static void semantics_check(Node * node, int count) {
 		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 
 		if (PRINT_VARS) if (scope > 0) print_vars();
-
-	/* <block> non-terminal */
-	} else if (node->name == "<block>") {
-		unsigned int num_vars = 0;
-		scope_begin = var_count;
-
-		if (PRINT_VARS) if (scope == 0) print_vars();
-		scope++;
-
-		for (Node * child : node->children)
-			if (child != nullptr) semantics_check(child, num_vars);
-
-		pop();
-		scope--;
 	
-	/* <expr> non-terminal */
+	/* <expr> -> <N> - <expr> | <N> */
 	} else if (node->name == "<expr>") {
 		if (node->tokens.size() > 0 && node->tokens[0].id == TK_MINUS) {
 			if (node->children.size() > 0 && node->children[1] != nullptr) semantics_check(node->children[1], count);
@@ -93,7 +93,7 @@ static void semantics_check(Node * node, int count) {
 			outfile << "SUB " << temp_var << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
-	/* <N> non-terminal */
+	/* <N> -> <A> / <N> | <A> * <N> | <A> */
 	} else if (node->name == "<N>") {
 		if (node->tokens.size() > 0 && (node->tokens[0].id == TK_SLASH)) {
 			if (node->children.size() > 0 && node->children[1] != nullptr) semantics_check(node->children[1], count);
@@ -109,7 +109,7 @@ static void semantics_check(Node * node, int count) {
 			outfile << "MULT " << temp_var << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
-	/* <A> non-terminal */
+	/* <A> -> <M> + <A> | <M> */
 	} else if (node->name == "<A>") {
 		if (node->tokens.size() > 0 && node->tokens[0].id == TK_PLUS) {
 			if (node->children.size() > 0 && node->children[1] != nullptr) semantics_check(node->children[1], count);
@@ -119,14 +119,14 @@ static void semantics_check(Node * node, int count) {
 			outfile << "ADD " << temp_var << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
-	/* <M> non-terminal */
+	/* <M> -> * <M> | <R> */
 	} else if (node->name == "<M>") {
 		if (node->tokens.size() > 0 && node->tokens[0].id == TK_ASTERISK) {
 			if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 			outfile << "MULT -1\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
-	/* <R> non-terminal */
+	/* <R> -> ( <expr> ) | Identifier | Integer */
 	} else if (node->name == "<R>") {
 		if (node->tokens[0].id == TK_ID) {
 			int var_location = var_exists(node->tokens[0]);
@@ -139,7 +139,7 @@ static void semantics_check(Node * node, int count) {
 			outfile << "LOAD " << node->tokens[0].value << "\n";
 		} else if (node->children.size() > 0 && node->children[0] != nullptr) semantics_check(node->children[0], count);
 	
-	/* <in> non-terminal */
+	/* <in> -> getter Identifier */
 	} else if (node->name == "<in>") {
 		int var_location = var_exists(node->tokens[1]);
 		if (var_location == -1) {
@@ -151,14 +151,14 @@ static void semantics_check(Node * node, int count) {
 		outfile << "LOAD " << temp_var << "\n";
 		outfile << "STACKW " << var_location << "\n";
 	
-	/* <out> non-terminal */
+	/* <out> -> outter <expr> */
 	} else if (node->name == "<out>") {
 		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 		std::string temp_var = get_temp_var();
 		outfile << "STORE " << temp_var << "\n";
 		outfile << "WRITE " << temp_var << "\n";
 	
-	/* <if> non-terminal */
+	/* <if> -> if [ <expr> <RO> <expr> ] then <stat> */
 	} else if (node->name == "<if>") {
 		TokenType cond_op = node->children[1]->tokens[0].id;
 		std::string temp_var = get_temp_var();
@@ -184,7 +184,7 @@ static void semantics_check(Node * node, int count) {
 		if (node->children[3] != nullptr) semantics_check(node->children[3], count);
 		outfile << label << ": NOOP\n";
 	
-	/* <loop> non-terminal */
+	/* <loop> -> loop [ <expr> <RO> <expr> ] <stat> */
 	} else if (node->name == "<loop>") {
 		TokenType cond_op = node->children[1]->tokens[0].id;
 		std::string temp_var = get_temp_var();
@@ -213,7 +213,7 @@ static void semantics_check(Node * node, int count) {
 		outfile << "BR " << start_label << "\n";
 		outfile << end_label << ": NOOP\n";
 	
-	/* <assign> non-terminal */
+	/* <assign> -> assign Identifier := <expr> */
 	} else if (node->name == "<assign>") {
 		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 		int var_location = var_exists(node->tokens[1]);
@@ -223,11 +223,11 @@ static void semantics_check(Node * node, int count) {
 		}
 		outfile << "STACKW " << var_location << "\n";
 	
-	/* <label> non-terminal */
+	/* <label> -> void Identifier */
 	} else if (node->name == "<label>") {
 		outfile << node->tokens[1].value << ": NOOP\n";
 	
-	/* <goto> non-terminal */
+	/* <goto> -> proc Identifier */
 	} else if (node->name == "<goto>") {
 		outfile << "BR " << node->tokens[1].value << "\n";
 	

@@ -1,9 +1,11 @@
+PRG := compfs
+
 SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
 
-EXE := $(BIN_DIR)/P4
-FIL := $(OBJ_DIR)/P4
+EXE := $(BIN_DIR)/$(PRG)
+FIL := $(OBJ_DIR)/$(PRG)
 SRC := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ := $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
@@ -11,7 +13,7 @@ CC := g++ -std=c++11
 CPPFLAGS := -Iinclude -MMD -MP
 CFLAGS := -Wall -g
 
-.PHONY: all test clean
+.PHONY: all test clean cleanrun
 
 all: $(EXE)
 
@@ -26,5 +28,8 @@ $(BIN_DIR) $(OBJ_DIR):
 
 clean:
 	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR) kb.* test-files/*.asm
+
+cleanrun:
+	@$(RM) -rv kb.* test-files/*.asm
 
 -include $(OBJ:.o=.d)
