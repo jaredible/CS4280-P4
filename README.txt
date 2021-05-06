@@ -14,8 +14,8 @@ Usage: (Note: Ctrl+D to finalize keyboard input)
 ./compfs < file
 ./compfs [filename]
 
-Testing:
-Exist in the directory "test-files"
+Tests:
+Located in directory "test-files"
 
 Adjustments:
 - Input files require blank last line
