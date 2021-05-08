@@ -167,6 +167,7 @@ static void semantics_check(Node * node, int count) {
 		outfile << "STORE " << temp_var << "\n";
 		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 		if (cond_op == TK_DOUBLE_EQUAL) {
+			outfile << "SUB " << temp_var << "\n";
 			outfile << "BRNEG " << label << "\nBRPOS " << label << "\n";
 		} else if (cond_op == TK_LESS_THAN_EQUAL) {
 			outfile << "SUB " << temp_var << "\n";
@@ -195,6 +196,7 @@ static void semantics_check(Node * node, int count) {
 		outfile << "STORE " << temp_var << "\n";
 		if (node->children[0] != nullptr) semantics_check(node->children[0], count);
 		if (cond_op == TK_DOUBLE_EQUAL) {
+			outfile << "SUB " << temp_var << "\n";
 			outfile << "BRNEG " << end_label << "\nBRPOS " << end_label << "\n";
 		} else if (cond_op == TK_LESS_THAN_EQUAL) {
 			outfile << "SUB " << temp_var << "\n";
