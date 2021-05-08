@@ -1,0 +1,15 @@
+$$ p4t7 $$
+data x := 69;
+main
+begin
+	outter x;
+	begin
+		assign x := x + 1;
+	end
+	outter x;
+	begin
+		data x := 420;
+		outter x;
+	end
+	outter x;
+end

@@ -5,6 +5,11 @@
 #include <stdio.h>
 #include <string>
 
+const std::string INFILE_EXTENSION = "ss21";
+const std::string OUTFILE_EXTENSION = "asm";
+const std::string KEYBOARD_TEMPFILE_NAME = "kb";
+const std::string KEYBOARD_TEMPFILE_EXTENSION = "txt";
+
 std::ofstream outfile;
 
 int main(int argc, char ** argv) {
@@ -18,8 +23,8 @@ int main(int argc, char ** argv) {
 	else if (argc == 2) {
 		/* Get filename and append extension */
 		std::string filename = argv[1];
-		std::string infile_name = filename + ".fs21";
-		std::string outfile_name = filename + ".asm";
+		std::string infile_name = filename + "." + INFILE_EXTENSION;
+		std::string outfile_name = filename + "." + OUTFILE_EXTENSION;
 
 		/* Open input file */
 		infile.open(infile_name);
@@ -55,7 +60,7 @@ int main(int argc, char ** argv) {
 	else if (argc == 1) {
 		/* Create temporary file to hold keyboard input */
 		std::ofstream tempfile;
-		std::string filename = "kb.txt";
+		std::string filename = KEYBOARD_TEMPFILE_NAME + "." + KEYBOARD_TEMPFILE_EXTENSION;
 
 		tempfile.open(filename, std::ios::trunc);
 
@@ -84,7 +89,7 @@ int main(int argc, char ** argv) {
 			exit(EXIT_FAILURE);
 		}
 
-		std::string outfile_name = "kb.asm";
+		std::string outfile_name = KEYBOARD_TEMPFILE_NAME + "." + OUTFILE_EXTENSION;
 
 		/* Execute parser */
 		Node * root = parser();

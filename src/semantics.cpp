@@ -231,7 +231,7 @@ static void semantics_check(Node * node, int count) {
 	} else if (node->name == "<goto>") {
 		outfile << "BR " << node->tokens[1].value << "\n";
 	
-	/* Other non-terminals */
+	/* Others */
 	} else {
 		for (Node * child : node->children)
 			if (child != nullptr) semantics_check(child, count);
