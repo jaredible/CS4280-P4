@@ -1,4 +1,4 @@
-PRG := compfs
+PRG := comp
 
 SRC_DIR := src
 OBJ_DIR := obj
