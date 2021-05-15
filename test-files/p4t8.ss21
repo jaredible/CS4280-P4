@@ -1,8 +1,0 @@
-main
-begin
-	data input := 0;
-	getter input;
-	if [ input =< 10 ] then
-		outter input;
-	;
-end
